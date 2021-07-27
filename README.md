@@ -54,7 +54,7 @@ Features
 - [x] Filters and zoom
 - [x] Change devices
 
-参考
+Thanks
 ----
 - [MeBoy](http://www.arktos.se/meboy/)
 - [JavaBoy]
