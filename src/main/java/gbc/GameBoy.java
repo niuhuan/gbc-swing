@@ -1980,6 +1980,9 @@ public class GameBoy implements Runnable {
                 break;
 
             // sound registers: 10 11 12 13 14 16 17 18 19 1a 1b 1c 1d 1e 20 21 22 23 24 25 26 30-3f
+
+            // 0x10: Sound 1 freq sweep
+            // 0x11: Sound 1 length
             // 0x12: Sound 1 volume + volume sweep
             // 0x13: Sound 1 freq 0-7
             // 0x14: Sound 1 frequency 8-10 + control
@@ -1999,28 +2002,15 @@ public class GameBoy implements Runnable {
             // 0x26: Sound on/off
             // 0x30-0x3f: Sound 3 wave pattern
 
-            case 0x11:
-            case 0x12:
-            case 0x13:
-            case 0x14:
+            // Sound play redirect to speaker
 
-            case 0x17:
-            case 0x18:
-            case 0x19:
-
-            case 0x1C:
-            case 0x1D:
-            case 0x1E:
-
-            case 0x20:
-            case 0x21:
-            case 0x22:
-            case 0x23:
+            case 0x1a:
                 registers[num] = (byte) data;
-                if (speaker != null) {
-                    speaker.ioWrite(num, data);
+                if ((data & 0x80) == 0) {
+                    registers[0x26] &= 0xfb; // clear bit 2 of sound status register
                 }
                 break;
+
 
             case 0x40: // LCDC
                 screen.UpdateLCDCFlags(data);
@@ -2188,6 +2178,9 @@ public class GameBoy implements Runnable {
             default:
                 registers[num] = (byte) data;
                 break;
+        }
+        if (num >= 0x10 && num <= 0x3f) {
+            speaker.ioWrite(num, data);
         }
     }
 
@@ -2554,7 +2547,7 @@ public class GameBoy implements Runnable {
         int result = addressRead1(addr);
         Cheat cheat = cheatMap.get(addr);
         if (cheat != null) {
-             if (cheat.ifIs == null || cheat.ifIs == result) {
+            if (cheat.ifIs == null || cheat.ifIs == result) {
                 return cheat.changeTo & 0xFF;
             }
         }

@@ -81,6 +81,7 @@ class Cartridge {
                 ramBankNumber = 0;
                 break;
         }
+        // mbc2 has built-in ram, and anyway we want the memory mapped
         return new byte[ramBankNumber == 0 ? 1 : ramBankNumber][0x2000];
     }
 

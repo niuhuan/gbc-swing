@@ -74,8 +74,6 @@ abstract class ScreenAbstract {
     protected int width = 160;
     protected int height = 144;
 
-    private boolean frameDone = true; // ugly framebuffer "mutex"
-
     protected BufferedImage frameBufferImage;
 
     // lookup table for fast image decoding
@@ -241,9 +239,7 @@ abstract class ScreenAbstract {
             return;
         }
         lastSkipCount = skipCount;
-        frameDone = false;
         screenListener.onFrameReady(frameBufferImage, lastSkipCount);
-        this.notifyRepainted();
         int now = (int) System.currentTimeMillis();
         if (maxFrameSkip == 0)
             skipping = false;
@@ -256,11 +252,8 @@ abstract class ScreenAbstract {
                 now = (int) System.currentTimeMillis();
             }
         } catch (InterruptedException e) {
-            // e.printStackTrace();
+            e.printStackTrace();
         }
-        // while (!frameDone && !cpu.terminate) {
-        //     Thread.yield();
-        // }
         skipCount = 0;
     }
 
@@ -298,10 +291,6 @@ abstract class ScreenAbstract {
         tileOffset = value * 384;
         videoRam = videoRamBanks[value];
         this.memory[4] = videoRam;
-    }
-
-    public final void notifyRepainted() {
-        frameDone = true;
     }
 
     public void stopWindowFromLine() {
